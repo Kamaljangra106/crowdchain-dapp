@@ -1,0 +1,650 @@
+/* CrowdChain
+   One bold idea: the fundraising thermometer. Everything else stays quiet.
+   Mercury red = open, green = funded, grey = missed (the mercury has gone out). */
+
+:root {
+  --enamel: #e4e9ec;
+  --sheet: #f7f9fa;
+  --ink: #14304a;
+  --ink-soft: #4a6073;
+  --rule: #c3ced5;
+  --rule-strong: #6f8393;
+  --gauge: #d3dce1;
+  --tick: rgba(20, 48, 74, 0.35);
+  --mercury: #d0342a;
+  --on-mercury: #ffffff;
+  --funded: #1f7a57;
+  --drained: #8798a4;
+  --focus: #0b63ce;
+
+  --display: "Big Shoulders Display Variable", "Arial Narrow", Impact, sans-serif;
+  --text: "Public Sans Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --enamel: #0e1a24;
+    --sheet: #14232f;
+    --ink: #e6eef2;
+    --ink-soft: #9fb2c0;
+    --rule: #26394a;
+    --rule-strong: #6c8091;
+    --gauge: #1e3140;
+    --tick: rgba(230, 238, 242, 0.35);
+    --mercury: #ff6155;
+    --on-mercury: #0e1a24;
+    --funded: #43c99d;
+    --drained: #6c8091;
+    --focus: #7fb4ff;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--enamel);
+  color: var(--ink);
+  font-family: var(--text);
+  font-size: 1rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- top bar ---------- */
+.topbar {
+  border-bottom: 2px solid var(--ink);
+}
+
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.75rem;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  font-size: 0.9rem;
+}
+
+.net {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--funded);
+}
+
+.dot.bad {
+  background: var(--mercury);
+}
+
+.acct {
+  font-weight: 600;
+  padding: 6px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+}
+
+/* ---------- hero ---------- */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: end;
+  padding: clamp(32px, 6vw, 64px) 0 clamp(28px, 4vw, 44px);
+}
+
+.hero h1 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: clamp(2.6rem, 6.4vw, 5.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.01em;
+  max-width: 15ch;
+}
+
+.outcomes {
+  display: grid;
+  gap: 20px;
+}
+
+.outcomes div {
+  padding-left: 14px;
+  border-left: 4px solid var(--drained);
+}
+
+.outcomes .funded {
+  border-left-color: var(--funded);
+}
+
+.outcomes dt {
+  font-weight: 700;
+}
+
+.outcomes dd {
+  color: var(--ink-soft);
+  max-width: 34ch;
+}
+
+/* ---------- notices ---------- */
+.notices {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.notices:empty {
+  display: none;
+}
+
+.notice {
+  padding: 12px 16px;
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-left: 5px solid var(--mercury);
+  border-radius: 4px;
+  max-width: 78ch;
+}
+
+.notice.info {
+  border-left-color: var(--ink);
+}
+
+button.link {
+  background: none;
+  border: 0;
+  padding: 0 4px;
+  font: inherit;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* ---------- layout ---------- */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: clamp(28px, 5vw, 56px);
+  align-items: start;
+  padding-bottom: 120px;
+}
+
+.section-title,
+.start h2 {
+  font-family: var(--display);
+  font-weight: 800;
+  font-size: 1.9rem;
+  line-height: 1.1;
+}
+
+.section-title {
+  margin-bottom: 14px;
+}
+
+.empty {
+  padding: 40px 24px;
+  border: 2px dashed var(--rule-strong);
+  border-radius: 6px;
+  color: var(--ink-soft);
+  max-width: 52ch;
+}
+
+/* ---------- campaign board ---------- */
+.board {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 28px;
+  padding: 28px;
+  border-top: 1px solid var(--rule);
+}
+
+.row:first-child {
+  border-top: 0;
+}
+
+.row-body {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-width: 0;
+}
+
+.row h3 {
+  font-size: 1.2rem;
+  line-height: 1.25;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.by,
+.of,
+.note {
+  font-size: 0.875rem;
+  color: var(--ink-soft);
+}
+
+.figures {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+}
+
+.num {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(3rem, 6vw, 4.25rem);
+  line-height: 0.9;
+  letter-spacing: -0.01em;
+}
+
+.num.small {
+  font-size: clamp(1.9rem, 3.4vw, 2.5rem);
+}
+
+.unit {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.clock {
+  text-align: right;
+}
+
+.outcome.funded {
+  color: var(--funded);
+}
+
+.outcome.failed {
+  color: var(--ink-soft);
+}
+
+.mine {
+  font-weight: 700;
+  color: var(--funded);
+}
+
+.pledge {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  max-width: 440px;
+}
+
+/* ---------- thermometer ---------- */
+.thermo {
+  --merc: var(--mercury);
+  position: relative;
+  width: 38px;
+  height: 178px;
+  flex: none;
+}
+
+.thermo.funded {
+  --merc: var(--funded);
+}
+
+.thermo.failed {
+  --merc: var(--drained);
+}
+
+.thermo .tube {
+  position: absolute;
+  inset: 0 10px 22px;
+  border: 2px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 9px 9px 0 0;
+  background: var(--gauge);
+  overflow: hidden;
+}
+
+/* quarter-marks: the goal is the top of the tube */
+.thermo .tube::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to top,
+    transparent 0,
+    transparent calc(25% - 2px),
+    var(--tick) calc(25% - 2px),
+    var(--tick) 25%
+  );
+}
+
+.thermo .mercury {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* 16px reserved so a small amount still clears the bulb */
+  height: calc(16px + (100% - 16px) * var(--p));
+  background: var(--merc);
+  transition: height 1.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.thermo .bulb {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  margin-left: -17px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--merc);
+}
+
+/* neck: hides the bulb's top edge so the mercury flows into the tube */
+.thermo::after {
+  content: "";
+  position: absolute;
+  left: 13px;
+  right: 13px;
+  bottom: 27px;
+  height: 12px;
+  background: var(--merc);
+  z-index: 2;
+}
+
+/* ---------- buttons & inputs ---------- */
+button {
+  font: inherit;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 4px;
+  border: 2px solid var(--ink);
+  cursor: pointer;
+}
+
+/* disabled looks inert, not just faded: no fill, no accent colour */
+button:disabled,
+.pledge-btn:disabled {
+  background: transparent;
+  color: var(--ink-soft);
+  border-color: var(--rule-strong);
+  cursor: not-allowed;
+}
+
+.row-body > button {
+  justify-self: start;
+}
+
+.solid {
+  background: var(--ink);
+  color: var(--sheet);
+}
+
+.outline {
+  background: transparent;
+  color: var(--ink);
+}
+
+.pledge-btn {
+  background: var(--mercury);
+  border-color: var(--mercury);
+  color: var(--on-mercury);
+}
+
+.wide {
+  width: 100%;
+}
+
+input,
+select {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 4px;
+  border: 0;
+  border-bottom: 2px solid var(--rule-strong);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+}
+
+input::placeholder {
+  color: var(--ink-soft);
+  opacity: 0.8;
+}
+
+input[aria-invalid="true"] {
+  border-bottom-color: var(--mercury);
+}
+
+select {
+  cursor: pointer;
+}
+
+/* ---------- the start-a-campaign form: flat on the page, like a pledge sheet ---------- */
+.start {
+  display: grid;
+  gap: 18px;
+  padding-top: 18px;
+  border-top: 6px solid var(--ink);
+}
+
+.lede {
+  color: var(--ink-soft);
+}
+
+.field {
+  display: grid;
+  gap: 2px;
+  border: 0;
+}
+
+.field > span,
+.field > legend {
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0;
+}
+
+.field small {
+  color: var(--ink-soft);
+  font-size: 0.8125rem;
+  margin-top: 4px;
+}
+
+.inline {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 16px;
+}
+
+.contract-addr {
+  margin-top: 18px;
+  font-size: 0.8125rem;
+  color: var(--ink-soft);
+}
+
+/* ---------- message that follows a transaction ---------- */
+.toast {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 10;
+  max-width: min(400px, calc(100vw - 32px));
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  background: var(--ink);
+  color: var(--sheet);
+  border-left: 6px solid #f4c95d;
+  border-radius: 4px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  font-size: 0.9rem;
+}
+
+.toast.ok {
+  border-left-color: #5fd3a5;
+}
+
+.toast.error {
+  border-left-color: #ff8c80;
+}
+
+.toast p + p {
+  margin-top: 2px;
+  opacity: 0.85;
+  overflow-wrap: anywhere;
+}
+
+.toast-title {
+  font-weight: 700;
+}
+
+.toast-close {
+  align-self: flex-start;
+  padding: 2px 10px;
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+  font-size: 0.8125rem;
+}
+
+/* ---------- small screens ---------- */
+@media (max-width: 880px) {
+  .hero {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  /* campaigns stay first: they are the main content, the form follows */
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 520px) {
+  .row {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .thermo {
+    width: 100%;
+    height: 44px;
+  }
+
+  /* on a phone the thermometer lies on its side as a full-width gauge */
+  .thermo .tube {
+    inset: 10px 0 10px 22px;
+    border: 2px solid var(--ink);
+    border-left: 0;
+    border-radius: 0 9px 9px 0;
+  }
+
+  .thermo .tube::after {
+    background: repeating-linear-gradient(
+      to right,
+      transparent 0,
+      transparent calc(25% - 2px),
+      var(--tick) calc(25% - 2px),
+      var(--tick) 25%
+    );
+  }
+
+  .thermo .mercury {
+    top: 0;
+    right: auto;
+    width: calc(16px + (100% - 16px) * var(--p));
+    height: auto;
+    transition-property: width;
+  }
+
+  .thermo .bulb {
+    left: 0;
+    bottom: 50%;
+    margin: 0 0 -17px;
+  }
+
+  .thermo::after {
+    left: 22px;
+    right: auto;
+    bottom: 50%;
+    width: 14px;
+    height: 12px;
+    margin-bottom: -6px;
+  }
+
+  .clock {
+    text-align: left;
+  }
+
+  .wallet {
+    justify-content: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thermo .mercury {
+    transition: none;
+  }
+}
